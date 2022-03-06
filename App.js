@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ActivityIndicator, SafeAreaView } from 'react-native';
-import {colors} from './src/utils/constans';
+import { StyleSheet, Text, View, ActivityIndicator, SafeAreaView, ImageBackground, } from 'react-native';
+import { colors } from './src/utils/constans';
 import SearchInput from './src/components/SearchInput';
 import { fetchLocationId, fetchWeather } from './src/utils/api';
+import WeaterItem from './src/components/WeaterItem';
+import WeatherNow from './src/components/WeatherNow';
 
 export default function App() {
 
@@ -13,32 +15,33 @@ export default function App() {
   const [city, setCity] = useState(null)
 
 
-  console.log(data);
-
   handleFindLocation = async city => {
     if (!city) return;
     setLoading(true)
     try {
-      const {lat, long, city_name} = await fetchLocationId(city)
-       setCity(city_name)
-      const result = await fetchWeather(lat, long)
-          console.log(result);
-        setData(result);
+      const { lat, long, city_name } = await fetchLocationId(city)
+        setCity(city_name)
+          const result = await fetchWeather(lat, long)
+          setData(result);
         setLoading(false)
     } catch (e) {
-        console.log(e);
-        setLoading(false)
+      console.log(e);
+      setLoading(false)
       setError(true)
     }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
-      <View style={styles.detailsContainer}>
+      <ImageBackground
+        source={require('./assets/weather.png')}
+        style={styles.imageContainer}
+        imageStyle={styles.image}
+      >
         <SearchInput
-          placeholder="Buscar ciudad"
+          placeholder="Search city"
           onSubmit={handleFindLocation}
           city={city}
         />
@@ -48,13 +51,26 @@ export default function App() {
           size="large"
           style={{ marginTop: 30 }}
         />
-        {error && (
-          <Text >
-            No pudimos encontrar encontrar la ciudad intenta nuevamente
-          </Text>
-        )}
-       
-      </View>
+
+        {!error ? (
+          <>
+            <WeatherNow
+              current={data.current}
+              timezone={data.timezone}
+              city={city}
+            />
+            <WeaterItem
+              data={data.daily}
+            />
+          </>
+        ) : (
+          <View style={styles.errorContainer}>
+            <Text style={styles.error} > We can't find the city try again</Text>
+          </View>
+        )
+
+        }
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -62,12 +78,25 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+    backgroundColor: colors.primary
   },
-  detailsContainer: {
+  errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 0,
+    alignItems: "center",
+    justifyContent: "center"
   },
+  error: {
+    color: "#fff",
+    fontSize: 20
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    width: null,
+    height: null,
+    resizeMode: 'cover',
+  },
+
 });

@@ -21,7 +21,6 @@ export default function SearchInput({onSubmit, placeholder}) {
    }
 
     return (
-    
       <View style={styles.container}>
         <TextInput
           autoCorrect={false}
@@ -44,21 +43,17 @@ const styles = StyleSheet.create({
     flexDirection:"row",
     height: 40,
     marginTop: 60,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.secundary,
     marginHorizontal: 25,
     paddingHorizontal: 10,
     borderRadius: 5,
+    borderWidth:1,
+    borderColor:"#fff"
     
   },
   textInput: {
     flex: 1,
     color: 'white',
     fontSize:16
-  },
-  button:{
-    width:40,
-    alignItems:"center",
-    justifyContent:"center",
-    marginRight:-5
   }
 });
